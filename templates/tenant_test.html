@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tenant Switching Test</title>
+</head>
+<body>
+    <h1>Tenant Switching Test</h1>
+    
+    <h2>Current Tenant Info</h2>
+    <div id="tenant-info">Loading...</div>
+    
+    <h2>Switch Tenant</h2>
+    <button onclick="switchTenant('org1')">Switch to org1</button>
+    <button onclick="switchTenant('tenant1')">Switch to tenant1</button>
+    
+    <h2>Test URLs</h2>
+    <a href="/tenant-info/">Current Tenant Info</a><br>
+    <a href="/tenant-info/?tenant=org1">org1 via query</a><br>
+    <a href="/tenant-info/?tenant=tenant1">tenant1 via query</a><br>
+    
+    <script>
+        function loadTenantInfo() {
+            fetch('/tenant-info/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('tenant-info').innerHTML = 
+                        '<strong>Tenant:</strong> ' + data.tenant_name + '<br>' +
+                        '<strong>Schema:</strong> ' + data.schema_name + '<br>' +
+                        '<strong>Domain:</strong> ' + data.domain + '<br>' +
+                        '<strong>Message:</strong> ' + data.message;
+                })
+                .catch(error => {
+                    document.getElementById('tenant-info').innerHTML = 
+                        'Error loading tenant info: ' + error;
+                });
+        }
+        
+        function switchTenant(tenantName) {
+            fetch('/switch-tenant/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: 'tenant_name=' + tenantName
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error);
+            });
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Load tenant info on page load
+        loadTenantInfo();
+    </script>
+</body>
+</html>
