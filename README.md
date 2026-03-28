@@ -329,6 +329,40 @@ http://tenant1.localhost:8000/api/dashboard/
 http://localhost:8000/api/public/
 ```
 
+### Tasks API
+
+#### Endpoints
+- `GET/POST /api/tasks/` - List and create tasks
+- `GET/PUT/PATCH/DELETE /api/tasks/{id}/` - Retrieve, update, delete tasks
+- `GET/POST /api/statuses/` - Manage task statuses (per tenant)
+- `GET/PUT/PATCH/DELETE /api/statuses/{id}/` - CRUD task statuses
+- `GET/POST /api/priorities/` - Manage task priorities (per tenant)
+- `GET/PUT/PATCH/DELETE /api/priorities/{id}/` - CRUD task priorities
+
+#### Filtering
+Use query parameters to filter tasks:
+```
+?status=1                    # Filter by status ID
+?priority=2                  # Filter by priority ID
+?assigned_to=3               # Filter by assigned user ID
+?created_by=1                # Filter by creator user ID
+?status=1&priority=2         # Multiple filters
+```
+
+#### Search & Ordering
+```
+?search=urgent               # Search in title and description
+?ordering=-created_at        # Order by creation date (newest first)
+?ordering=due_date           # Order by due date
+?search=report&ordering=-priority  # Combine search and ordering
+```
+
+#### Tenant Behavior
+- **Non-superusers**: Only see tasks in their tenant
+- **Superusers**: Can see tasks across all tenants
+- **Dropdowns**: Statuses, priorities, and users are filtered to current tenant
+- **Auto-assignment**: `tenant` and `created_by` set automatically on create
+
 ## License
 
 This project is licensed under the MIT License.

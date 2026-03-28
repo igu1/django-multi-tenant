@@ -3,7 +3,9 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
-# Register your viewsets here when you create them
+router.register(r'tasks', views.TaskViewSet)
+router.register(r'statuses', views.TaskStatusViewSet, basename='taskstatus')
+router.register(r'priorities', views.TaskPriorityViewSet, basename='taskpriority')
 
 urlpatterns = [
     path('', include(router.urls)),

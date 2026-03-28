@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "django_extensions",
+    "django_filters",
     "apps.tenants",
     "apps.tasks",
     "apps.leave",
